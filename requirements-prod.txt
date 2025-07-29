@@ -1,0 +1,22 @@
+# Production Requirements
+# Optimized for production deployment
+# Install with: pip install -r requirements-prod.txt
+
+# Include base requirements
+-r requirements.txt
+
+# Security & Monitoring
+django-cors-headers==4.4.0   # CORS handling
+django-csp==3.8              # Content Security Policy
+sentry-sdk==2.14.0           # Error monitoring and logging
+
+# Performance & Caching
+redis==5.0.8                 # Redis client for caching
+django-redis==5.4.0          # Django Redis cache backend
+celery==5.3.4                # Task queue for background jobs
+
+# Additional Production Tools
+django-storages==1.14.4      # Cloud storage backends (AWS S3, etc.)
+boto3==1.35.14               # AWS SDK (if using S3)
+
+

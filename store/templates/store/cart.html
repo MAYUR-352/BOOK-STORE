@@ -1,0 +1,17 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<h2>Your Cart</h2>
+{% if cart_items %}
+<ul class="list-group mb-3">
+    {% for item in cart_items %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ item.book.title }} (x{{ item.quantity }})
+        ₹{{ item.book.price|floatformat:2 }}
+    </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'checkout' %}" class="btn btn-warning">Checkout</a>
+{% else %}
+<p>Your cart is empty.</p>
+{% endif %}
+{% endblock %}

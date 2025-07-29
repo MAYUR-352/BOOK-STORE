@@ -1,0 +1,8 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<h2>{{ book.title }}</h2>
+<p><strong>Author:</strong> {{ book.author }}</p>
+<p><strong>Price:</strong> ₹{{ book.price }}</p>
+<p>{{ book.description }}</p>
+<a href="{% url 'add_to_cart' book.id %}" class="btn btn-success">Add to Cart</a>
+{% endblock %}
