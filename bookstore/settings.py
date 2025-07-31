@@ -45,7 +45,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # DEBUG = False
 
 # here is change
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 # Application definition
