@@ -187,6 +187,23 @@ if not DEBUG:
 # D:/mayur/DEPLOY2/.venv/Scripts/python.exe manage.py check --deploy
 
 # Logging configuration
+
+# Create logs directory if it doesn't exist (for local development)
+LOGS_DIR = BASE_DIR / "logs"
+
+# Ensure logs directory exists in development
+if DEBUG:
+    LOGS_DIR.mkdir(exist_ok=True)
+
+# Detect if we're running on Render or other cloud platforms
+IS_PRODUCTION = not DEBUG or any([
+    os.getenv('RENDER'),
+    os.getenv('HEROKU'),
+    os.getenv('RAILWAY_ENVIRONMENT'),
+    os.getenv('VERCEL'),
+])
+
+# Dynamic logging configuration based on environment
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -201,23 +218,45 @@ LOGGING = {
         },
     },
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "formatter": "simple"},
-        "file": {
-            "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs" / "django.log",
-            "formatter": "verbose",
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple"
         },
+    },
+    "root": {
+        "level": "INFO",
+        "handlers": ["console"],
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file"] if not DEBUG else ["console"],
+            "handlers": ["console"],
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
-            "propagate": True,
+            "propagate": False,
         },
         "bookstore": {
-            "handlers": ["console", "file"] if not DEBUG else ["console"],
-            "level": "DEBUG",
-            "propagate": True,
+            "handlers": ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
         },
     },
 }
+
+# Only add file logging in development when it's safe to do so
+if DEBUG and not IS_PRODUCTION and LOGS_DIR.exists():
+    try:
+        # Test if we can write to the logs directory
+        test_file = LOGS_DIR / "test.log"
+        test_file.touch()
+        test_file.unlink()  # Remove the test file
+        
+        LOGGING["handlers"]["file"] = {
+            "class": "logging.FileHandler",
+            "filename": LOGS_DIR / "django.log",
+            "formatter": "verbose",
+        }
+        # Add file handler to loggers in development
+        LOGGING["loggers"]["django"]["handlers"].append("file")
+        LOGGING["loggers"]["bookstore"]["handlers"].append("file")
+    except (OSError, PermissionError):
+        # If we can't write to logs directory, just use console logging
+        pass

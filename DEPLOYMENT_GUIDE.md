@@ -8,7 +8,9 @@
 3. **Improved settings.py**: Better environment variable handling
 4. **Added runtime.txt**: Specifies Python version
 5. **Enhanced security**: Better SECRET_KEY handling
-6. **Added logging**: Production-ready logging configuration
+6. **Fixed logging configuration**: Production-safe logging with automatic cloud platform detection
+7. **Resolved file logging error**: Intelligent file logging that only activates in safe environments
+8. **Added logs directory**: Created logs/.gitkeep to ensure directory exists in repository
 
 ### 📋 Pre-Deployment Checklist:
 
@@ -102,3 +104,24 @@ python manage.py runserver
 - ✅ Optimized middleware order
 
 Your Django bookstore application is now production-ready! 🎉
+
+## 🔧 Troubleshooting Common Deployment Issues
+
+### Issue: "FileNotFoundError: logs/django.log"
+**Solution**: This has been fixed! The logging configuration now uses console-only logging in production to avoid file system permission issues.
+
+### Issue: "SECRET_KEY too short" warning
+**Solution**: Set a proper SECRET_KEY environment variable using the generated key provided above.
+
+### Issue: Static files not loading
+**Solution**: Ensure `whitenoise` is installed and `STATICFILES_STORAGE` is set to `whitenoise.storage.CompressedManifestStaticFilesStorage`.
+
+### Issue: Database connection errors
+**Solution**: Verify your `DATABASE_URL` environment variable is correctly formatted. The app falls back to SQLite in development.
+
+### Issue: 500 Internal Server Error
+**Solution**: 
+1. Check your environment variables are set correctly
+2. Ensure `DEBUG=False` in production
+3. Check the deployment logs for specific error messages
+4. Verify all required packages are in requirements.txt
