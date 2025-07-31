@@ -1,11 +1,55 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from django.conf import settings
 from .models import Book, CartItem, Order
 from django.contrib.auth.decorators import login_required
 
 
+def health_check(request):
+    """Simple health check endpoint for deployment debugging"""
+    return JsonResponse({
+        'status': 'ok',
+        'message': 'Django is running successfully!',
+        'debug': False,
+        'allowed_hosts': list(settings.ALLOWED_HOSTS) if hasattr(settings, 'ALLOWED_HOSTS') else [],
+    })
+
+
+def simple_home(request):
+    """Simple home view without templates for debugging"""
+    from django.http import HttpResponse
+    return HttpResponse("""
+    <html>
+    <head><title>Bookstore - Simple Home</title></head>
+    <body>
+        <h1>Django Bookstore is Working!</h1>
+        <p>This is a simple home page to test if Django is responding.</p>
+        <p>If you see this, Django is working properly!</p>
+        <a href="/admin/">Admin Panel</a> | 
+        <a href="/health/">Health Check</a>
+    </body>
+    </html>
+    """)
+
+
 def home(request):
-    books = Book.objects.all()
-    return render(request, "store/home.html", {"books": books})
+    try:
+        books = Book.objects.all()
+        return render(request, "store/home.html", {"books": books})
+    except Exception as e:
+        # If template fails, show simple response
+        from django.http import HttpResponse
+        return HttpResponse(f"""
+        <html>
+        <head><title>Bookstore - Template Error</title></head>
+        <body>
+            <h1>Template Error</h1>
+            <p>There was an error loading the template: {str(e)}</p>
+            <p>But Django is working!</p>
+            <a href="/simple/">Simple Home</a> | <a href="/admin/">Admin</a>
+        </body>
+        </html>
+        """)
 
 
 def book_detail(request, book_id):

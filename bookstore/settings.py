@@ -45,16 +45,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # DEBUG = False
 
 # here is change
-# ALLOWED_HOSTS configuration with environment detection
-if os.getenv('RENDER'):
-    # Production on Render
-    ALLOWED_HOSTS = ['book-store-ww86.onrender.com', 'www.book-store-ww86.onrender.com']
-elif os.getenv('HEROKU'):
-    # Production on Heroku
-    ALLOWED_HOSTS = [os.getenv('HEROKU_APP_NAME') + '.herokuapp.com'] if os.getenv('HEROKU_APP_NAME') else ['*']
-else:
-    # Development or other environments
-    ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "book-store-ww86.onrender.com,localhost,127.0.0.1").split(",")
+# ALLOWED_HOSTS configuration - simplified and more robust
+ALLOWED_HOSTS = [
+    'book-store-ww86.onrender.com',
+    'www.book-store-ww86.onrender.com',
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',  # Required for some cloud platforms
+]
+
+# Allow custom ALLOWED_HOSTS from environment if provided
+if os.getenv("ALLOWED_HOSTS"):
+    ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 
 # Application definition
